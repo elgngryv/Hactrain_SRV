@@ -25,6 +25,20 @@ export const registerUser = async (req, res) => {
   }
 };
 
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-password -confirmPassword");
+
+    res.status(200).json({
+      message: "İstifadəçilər uğurla alındı ✅",
+      count: users.length,
+      users,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Xəta baş verdi", error: error.message });
+  }
+};
+
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -40,14 +54,14 @@ export const loginUser = async (req, res) => {
 
     // 🔑 Token yaradılır
     const token = jwt.sign(
-      { id: user._id, email: user.email }, // payload
-      process.env.JWT_SECRET, // gizli açar (.env faylında saxlanacaq)
-      { expiresIn: "1h" } // 1 saatlıq etibarlı
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET, 
+      { expiresIn: "1h" } 
     );
 
     res.status(200).json({
       message: "Login uğurlu oldu ✅",
-      token, // cavabda tokeni qaytarırıq
+      token, 
       user,
     });
   } catch (error) {

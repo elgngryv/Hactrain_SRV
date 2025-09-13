@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { connectDB } from "./config/db.js";
 import userRouter from "./Routes/auth/auth.routes.js";
+import imageRouter from "./Routes/image.routes.js";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use(
 );
 
 app.use("/api", userRouter);
+app.use("/api/image", imageRouter);
 
 // Route test
 app.get("/", (req, res) => {

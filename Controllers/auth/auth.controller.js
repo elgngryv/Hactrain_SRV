@@ -55,13 +55,77 @@ export const loginUser = async (req, res) => {
     // 🔑 Token yaradılır
     const token = jwt.sign(
       { id: user._id, email: user.email },
-      process.env.JWT_SECRET, 
-      { expiresIn: "1h" } 
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
     );
 
     res.status(200).json({
       message: "Login uğurlu oldu ✅",
-      token, 
+      token,
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Xəta baş verdi", error: error.message });
+  }
+};
+
+// ✅ İstifadəçi yeniləmə
+export const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { username, email, password } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { username, email, password },
+      { new: true, runValidators: true }
+    ).select("-password -confirmPassword");
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "İstifadəçi tapılmadı" });
+    }
+
+    res.status(200).json({
+      message: "İstifadəçi məlumatları yeniləndi ✅",
+      user: updatedUser,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Xəta baş verdi", error: error.message });
+  }
+};
+
+// ✅ İstifadəçi silmə
+export const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedUser = await User.findByIdAndDelete(id);
+
+    if (!deletedUser) {
+      return res.status(404).json({ message: "İstifadəçi tapılmadı" });
+    }
+
+    res.status(200).json({
+      message: "İstifadəçi uğurla silindi ✅",
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Xəta baş verdi", error: error.message });
+  }
+};
+
+// ✅ İstifadəçi məlumatları (info)
+export const getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id).select("-password -confirmPassword");
+
+    if (!user) {
+      return res.status(404).json({ message: "İstifadəçi tapılmadı" });
+    }
+
+    res.status(200).json({
+      message: "İstifadəçi məlumatları uğurla alındı ✅",
       user,
     });
   } catch (error) {

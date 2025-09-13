@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 export const registerUser = async (req, res) => {
   try {
-    const { username, email, password, confirmPassword } = req.body;
+    const { username, email, password, confirmPassword, role, status, challenges } = req.body;
 
     if (password !== confirmPassword) {
       return res.status(400).json({ message: "Şifrələr uyğun gəlmir" });
@@ -14,16 +14,27 @@ export const registerUser = async (req, res) => {
       return res.status(400).json({ message: "Bu istifadəçi artıq mövcuddur" });
     }
 
-    const newUser = new User({ username, email, password, confirmPassword });
+    const newUser = new User({
+      username,
+      email,
+      password,
+      confirmPassword,
+      role,       // default "user"
+      status,     // default "active"
+      challenges, // default []
+    });
+
     await newUser.save();
 
-    res
-      .status(201)
-      .json({ message: "Qeydiyyat uğurlu oldu ✅", user: newUser });
+    res.status(201).json({
+      message: "Qeydiyyat uğurlu oldu ✅",
+      user: newUser,
+    });
   } catch (error) {
     res.status(500).json({ message: "Xəta baş verdi", error: error.message });
   }
 };
+
 
 export const getAllUsers = async (req, res) => {
   try {
@@ -73,11 +84,11 @@ export const loginUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const { username, email, password } = req.body;
+    const { username, email, password, role, status, challenges } = req.body;
 
     const updatedUser = await User.findByIdAndUpdate(
       id,
-      { username, email, password },
+      { username, email, password, role, status, challenges },
       { new: true, runValidators: true }
     ).select("-password -confirmPassword");
 
@@ -93,6 +104,7 @@ export const updateUser = async (req, res) => {
     res.status(500).json({ message: "Xəta baş verdi", error: error.message });
   }
 };
+
 
 // ✅ İstifadəçi silmə
 export const deleteUser = async (req, res) => {

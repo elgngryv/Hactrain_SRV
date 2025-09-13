@@ -1,43 +1,54 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
-  username: {
+const challengeSchema = new mongoose.Schema({
+  level: {
     type: String,
-    required: true,
-    unique: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
+    enum: ["easy", "normal", "hard"],
     required: true,
   },
-  confirmPassword: {
-    type: String,
-    required: true,
-  },
-  role: {
-    type: String,
-    enum: ["user", "admin"],
-    default: "user",
-  },
-  status: {
-    type: String,
-    enum: ["active", "inactive", "banned"],
-    default: "active",
-  },
-  joinDate: {
-    type: Date,
-    default: Date.now,
-  },
-  challenges: {
-    type: [String], 
-    default: [],
+  score: {
+    type: Number,
+    default: 0,
   },
 });
+
+const userSchema = new mongoose.Schema(
+  {
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    confirmPassword: {
+      type: String,
+      required: true,
+    },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
+    status: {
+      type: String,
+      enum: ["active", "inactive", "banned"],
+      default: "active",
+    },
+    challenges: {
+      type: [challengeSchema],
+      default: [],
+    },
+  },
+  { timestamps: true } // 🔑 createdAt və updatedAt avtomatik yaranır
+);
 
 const User = mongoose.model("User", userSchema);
 

@@ -47,7 +47,7 @@ const userSchema = new mongoose.Schema(
       default: [],
     },
   },
-  { timestamps: true } // 🔑 createdAt və updatedAt avtomatik yaranır
+  { timestamps: true }
 );
 
 const User = mongoose.model("User", userSchema);

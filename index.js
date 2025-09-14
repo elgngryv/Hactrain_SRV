@@ -20,7 +20,7 @@ app.use(
       "http://192.168.0.226:8080",
       "https://hacktrain.vercel.app",
     ],
-    methods: ["GET", "POST", "DELETE", "PATCH"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })

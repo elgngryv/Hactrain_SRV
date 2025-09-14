@@ -86,24 +86,36 @@ export const updateUser = async (req, res) => {
     const { id } = req.params;
     const { username, email, password, role, status, challenges } = req.body;
 
-    const updatedUser = await User.findByIdAndUpdate(
-      id,
-      { username, email, password, role, status, challenges },
-      { new: true, runValidators: true }
-    ).select("-password -confirmPassword");
-
-    if (!updatedUser) {
+    const user = await User.findById(id);
+    if (!user) {
       return res.status(404).json({ message: "İstifadəçi tapılmadı" });
     }
 
+    // sahələri dəyiş
+    if (username) user.username = username;
+    if (email) user.email = email;
+    if (role) user.role = role;
+    if (status) user.status = status;
+    if (Array.isArray(challenges)) user.challenges = challenges;
+    if (password) user.password = password; // hash pre('save') işləyəcək
+
+    const updatedUser = await user.save();
+
+    // cavabda password və confirmPassword gizlədək
+    const userObj = updatedUser.toObject();
+    delete userObj.password;
+    delete userObj.confirmPassword;
+
     res.status(200).json({
       message: "İstifadəçi məlumatları yeniləndi ✅",
-      user: updatedUser,
+      user: userObj,
     });
   } catch (error) {
     res.status(500).json({ message: "Xəta baş verdi", error: error.message });
   }
 };
+
+
 
 
 // ✅ İstifadəçi silmə
